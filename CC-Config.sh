@@ -1,9 +1,9 @@
 #!/bin/bash
-# Title         :CC-Config.sh
-# Description   :Get PBS Information & Configure System
-# Author        :Juan Garcia
-# Date          :05:05:2022
-# Version       :4.0
+# Title: CC-Config.sh
+# Description: Get PBS Information & Configure System
+# Author: 3EYEDGOD
+# Date: 05:05:2022
+# Version: 4.0
 #########################################################################################################
 # DEPENDENCIES:
 #
@@ -47,7 +47,7 @@ CCPERSON=$( ix-tmp/CC-Person.txt | tr "[:lower:]" "[:upper:]" )
 # Collecting order number for systems
 
 dialog --inputbox "Enter Order Number" 10 60 2>ix-tmp/ORDER-Num.txt
-ORDER=$( ix-tmp/ORDER-Num.txt)
+ORDER=$( ix-tmp/ORDER-Num.txt )
 
 # Removing previous files
 
@@ -77,7 +77,7 @@ exec 0<$FILE
 while read -r line
 do
 
-SERIAL=$(echo "$line" | cut -d " " -f1)
+SERIAL=$( echo "$line" | cut -d " " -f1 )
 
 touch ix-tmp/CC/"$ORDER"-PBS-OUTPUT.txt
 touch ix-tmp/"$SERIAL"-Username.txt
@@ -93,10 +93,10 @@ curl -ks https://archive.pbs.ixsystems.net/pbsv4/pbs_logs/"$SERIAL"/ | tail -3 |
 
 if ix-tmp/"$SERIAL"-DIR.txt | cut -d '"' -f1 | sed "s,/$,," | grep -F -wqi -e "Debug"; then
   curl -ks https://archive.pbs.ixsystems.net/pbsv4/pbs_logs/"$SERIAL"/ | tail -4 | head -1 | cut -c10-24 > ix-tmp/"$SERIAL"-DIR.txt
-  PBSDIRECTORY=$( ix-tmp/"$SERIAL"-DIR.txt)
+  PBSDIRECTORY=$( ix-tmp/"$SERIAL"-DIR.txt )
   curl https://archive.pbs.ixsystems.net/pbsv4/pbs_logs/"$SERIAL"/"$PBSDIRECTORY"/ipmi_summary.txt -o ix-tmp/"$SERIAL"-PBS-IPMI_Summary.txt
 
-elif PBSDIRECTORY=$( ix-tmp/"$SERIAL"-DIR.txt); then
+elif PBSDIRECTORY=$( ix-tmp/"$SERIAL"-DIR.txt ); then
   echo "$PBSDIRECTORY" > ix-tmp/"$SERIAL"-DIR-CHECK.txt
   curl https://archive.pbs.ixsystems.net/pbsv4/pbs_logs/"$SERIAL"/"$PBSDIRECTORY"/ipmi_summary.txt -o ix-tmp/"$SERIAL"-PBS-IPMI_Summary.txt
 
@@ -107,7 +107,7 @@ fi
 curl https://archive.pbs.ixsystems.net/pbsv4/pbs_logs/"$SERIAL"/"$PBSDIRECTORY"/Passmark_Log.cert.htm -o ix-tmp/"$SERIAL"-PBS-Passmark_Log.cert.htm
 lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.cert.htm | grep -F "TEST RUN" > ix-tmp/"$SERIAL"-Test-Run.txt
 tr -s ' ' <  ix-tmp/"$SERIAL"-Test-Run.txt | cut -d ' ' -f 4 > ix-tmp/"$SERIAL"-PF.txt
-PASSFAIL=$( ix-tmp/"$SERIAL"-PF.txt | xargs)
+PASSFAIL=$( ix-tmp/"$SERIAL"-PF.txt | xargs )
 
 if [ "$PASSFAIL" == "PASSED" ]; then
   echo "[PASSED]" > ix-tmp/"$SERIAL"-Passed.txt
@@ -126,49 +126,49 @@ if ! [ -s ix-tmp/"$SERIAL"-CPU-Presence.txt ]; then
   echo "[NO CPU TEMP DETECTED]" > ix-tmp/"$SERIAL"-NO-CPU-Presence.txt
 fi
 
-NOCPUTEMP=$( ix-tmp/"$SERIAL"-NO-CPU-Presence.txt)
+NOCPUTEMP=$( ix-tmp/"$SERIAL"-NO-CPU-Presence.txt )
 
-# CPU temp check
+# CPU temp check (Unused after new burn in)
 
-lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.cert.htm | grep -E -i 'CPU 0|CPU 1' | xargs > ix-tmp/"$SERIAL"-CPU-Temp.txt
-ix-tmp/"$SERIAL"-CPU-Temp.txt | cut -d " " -f5 | cut -c 1-2 > ix-tmp/"$SERIAL"-CPU-Max.txt
-read -r num < ix-tmp/"$SERIAL"-CPU-Max.txt
-if [[ "$num" -gt 89 ]]; then
-  echo "[CPU TEMP ABOVE THRESHOLD]" > ix-tmp/"$SERIAL"-CPU-Error.txt
-else
-  echo "[CPU TEMP OK]"
-fi
+# lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.cert.htm | grep -E -i 'CPU 0|CPU 1' | xargs > ix-tmp/"$SERIAL"-CPU-Temp.txt
+# ix-tmp/"$SERIAL"-CPU-Temp.txt | cut -d " " -f5 | cut -c 1-2 > ix-tmp/"$SERIAL"-CPU-Max.txt
+# read -r num < ix-tmp/"$SERIAL"-CPU-Max.txt
+# if [[ "$num" -gt 89 ]]; then
+#   echo "[CPU TEMP ABOVE THRESHOLD]" > ix-tmp/"$SERIAL"-CPU-Error.txt
+# else
+#   echo "[CPU TEMP OK]"
+# fi
 
-CPUTEMP=$( ix-tmp/"$SERIAL"-CPU-Error.txt)
+CPUTEMP=$( ix-tmp/"$SERIAL"-CPU-Error.txt )
 
 # Checking to ensure system ran with test disk
 
 lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.cert.htm | grep -F "Disk (00)" > ix-tmp/"$SERIAL"-Disk00-pf.txt
-DISK00PF=$( ix-tmp/"$SERIAL"-Disk00-pf.txt | xargs)
+DISK00PF=$( ix-tmp/"$SERIAL"-Disk00-pf.txt | xargs )
 
 # Collecting test duration
 
 lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.cert.htm | grep -F "Test Duration" > ix-tmp/"$SERIAL"-Test-Duration-pf.txt
-TESTDURATION=$( ix-tmp/"$SERIAL"-Test-Duration-pf.txt | xargs)
+TESTDURATION=$( ix-tmp/"$SERIAL"-Test-Duration-pf.txt | xargs )
 
 # Collecting IPMI IP address
 
 sed -e "s/\r//g" ix-tmp/"$SERIAL"-PBS-IPMI_Summary.txt > ix-tmp/"$SERIAL"-IPMI-Summary.txt
 
 ix-tmp/"$SERIAL"-IPMI-Summary.txt | grep -E -i "IPv4 Address           : " | cut -d ":" -f2 > ix-tmp/"$SERIAL"-IPMI-IPAdddress.txt
-IPMIIP=$( ix-tmp/"$SERIAL"-IPMI-IPAdddress.txt | xargs)
+IPMIIP=$( ix-tmp/"$SERIAL"-IPMI-IPAdddress.txt | xargs )
 
 # Collecting IPMI MAC address
 
 ix-tmp/"$SERIAL"-IPMI-Summary.txt | grep -E -i "BMC MAC Address        : " > ix-tmp/"$SERIAL"-IPMI-BMC-MAC.txt
 tr -s ' ' <  ix-tmp/"$SERIAL"-IPMI-BMC-MAC.txt | cut -d ' ' -f 5  > ix-tmp/"$SERIAL"-BMC-MAC.txt
-IPMIMAC=$( ix-tmp/"$SERIAL"-BMC-MAC.txt)
+IPMIMAC=$( ix-tmp/"$SERIAL"-BMC-MAC.txt )
 
 # Collecting STD info
 
 psql -h std.ixsystems.com -U std2 -d std2 -c "select c.name, a.model, a.serial, a.rma, a.revision, a.support_number from production_part a, production_system b, production_type c, production_configuration d where a.system_id = b.id and a.type_id = c.id and b.config_name_id = d.id and b.system_serial = '$SERIAL' order by b.system_serial, a.type_id, a.model, a.serial;" > ix-tmp/"$SERIAL"-STD-Parts.txt
 ix-tmp/"$SERIAL"-STD-Parts.txt | grep "Unique Password" | cut -d "|" -f3 | xargs > ix-tmp/"$SERIAL"-IPMI-Password.txt
-IPMIPASSWORD=$( ix-tmp/"$SERIAL"-IPMI-Password.txt)
+IPMIPASSWORD=$( ix-tmp/"$SERIAL"-IPMI-Password.txt )
 
 # Checking for break-out cable
 
@@ -178,13 +178,13 @@ ix-tmp/"$SERIAL"-Network-Cable.txt | cut -d "|" -f1 > ix-tmp/"$SERIAL"-Network-C
 ix-tmp/"$SERIAL"-Network-Cable.txt | cut -d "|" -f2 > ix-tmp/"$SERIAL"-Network-Cable-Model.txt
 ix-tmp/"$SERIAL"-Network-Cable.txt | cut -d "|" -f3 > ix-tmp/"$SERIAL"-Network-Cable-Serial.txt
 
-NETCABCP=$( ix-tmp/"$SERIAL"-Network-Cable-CP.txt)
+NETCABCP=$( ix-tmp/"$SERIAL"-Network-Cable-CP.txt )
 
 if [ "$NETCABCP" == "Break" ]; then
   echo "[BREAK-OUT CABLE]" > ix-tmp/"$SERIAL"-Break-Out.txt
 fi
 
-BREAKOUT=$( ix-tmp/"$SERIAL"-Break-Out.txt)
+BREAKOUT=$( ix-tmp/"$SERIAL"-Break-Out.txt )
 
 # Checking for inlet temp
 
@@ -196,25 +196,25 @@ elif ! grep -q "OK" "ix-tmp/Inlet.txt" && [ -s ix-tmp/Inlet.txt ]; then
   echo "[INLET TEMP NOT OK]" > ix-tmp/Inlet-warning.txt
 fi
 
-INLET=$( ix-tmp/Inlet-warning.txt)
+INLET=$( ix-tmp/Inlet-warning.txt )
 
 # Getting motherboard manufacturer info
 
 lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.cert.htm | grep -F "Motherboard manufacturer" > ix-tmp/"$SERIAL"-Motherboard-Manufacturer.txt
 sed -e "s/\r//g" ix-tmp/"$SERIAL"-Motherboard-Manufacturer.txt | cut -d ' ' -f 6 > ix-tmp/"$SERIAL"-MBMAN.txt
-MOTHERMAN=$( ix-tmp/"$SERIAL"-MBMAN.txt)
+MOTHERMAN=$( ix-tmp/"$SERIAL"-MBMAN.txt )
 
 # Getting system model type
 
 lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.htm | grep -F "System Model:" > ix-tmp/"$SERIAL"-System-Model.txt
 ix-tmp/"$SERIAL"-System-Model.txt | cut -d " " -f19 > ix-tmp/"$SERIAL"-Model-Type.txt
-MODELTYPE=$( ix-tmp/"$SERIAL"-Model-Type.txt)
+MODELTYPE=$( ix-tmp/"$SERIAL"-Model-Type.txt )
 
 # Checking for wrong memory serial for TrueNAS systems
 
 curl https://archive.pbs.ixsystems.net/pbsv4/pbs_logs/"$SERIAL"/"$PBSDIRECTORY"/DIMM_MemoryChipData.txt -o ix-tmp/"$SERIAL"-PBS-DIMM_MemoryChipData.txt
 ix-tmp/"$SERIAL"-PBS-DIMM_MemoryChipData.txt | grep -i 'XF' > ix-tmp/"$SERIAL"-Mem-Check.txt
-MEMSERIALCHECK=$( ix-tmp/"$SERIAL"-Mem-Check.txt)
+MEMSERIALCHECK=$( ix-tmp/"$SERIAL"-Mem-Check.txt )
 
 if echo "$MEMSERIALCHECK" | grep -F -wqi -e 'XF' ; then
     echo "[NVDIMM ERROR]" > ix-tmp/"$SERIAL"-Mem-Error.txt
@@ -222,20 +222,20 @@ else
     echo "[CORRECT NVDIMM]" 
 fi
 
-MEMERROR=$( ix-tmp/"$SERIAL"-Mem-Error.txt)
+MEMERROR=$( ix-tmp/"$SERIAL"-Mem-Error.txt )
 
 # Check for presence of QLOGIC fibre card
 
 psql -h std.ixsystems.com -U std2 -d std2 -c "select c.name, a.model, a.serial, a.rma, a.revision, a.support_number from production_part a, production_system b, production_type c, production_configuration d where a.system_id = b.id and a.type_id = c.id and b.config_name_id = d.id and b.system_serial = '$SERIAL' order by b.system_serial, a.type_id, a.model, a.serial;" > ix-tmp/"$SERIAL"-STD-Parts.txt
 ix-tmp/"$SERIAL"-STD-Parts.txt | grep -i QLE | cut -d "|" -f2 | grep -i -o -P '.{0,0}qle.{0,0}' > ix-tmp/"$SERIAL"-QLE-Output.txt
 
-QLE=$( ix-tmp/"$SERIAL"-QLE-Output.txt)
+QLE=$( ix-tmp/"$SERIAL"-QLE-Output.txt )
 
 if [ "$QLE" == "QLE" ]; then
 
   echo "QLOGIC-CARD-Present-Check-TrueNAS-License" > ix-tmp/"$SERIAL"-QLOGIC-Check.txt
   echo "[QLOGIC/FC]" > ix-tmp/"$SERIAL"-QLOGIC-msg.txt
-  QLOGIC=$( ix-tmp/"$SERIAL"-QLOGIC-msg.txt)
+  QLOGIC=$( ix-tmp/"$SERIAL"-QLOGIC-msg.txt )
 
 fi
 
@@ -246,11 +246,11 @@ echo "==========================================================================
 # Creating function for password check
 
 function PWD-CHECK(){
-  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt)
+  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt )
   ipmitool -I lanplus -H "$IPMIIP" -U "$IPMIUSER" -P "$IPMIPASSWORD" lan print 1 > ix-tmp/"$SERIAL"-Passwd-Check.txt
 
   tr -s ' ' < ix-tmp/"$SERIAL"-Passwd-Check.txt | grep -i Complete | cut -d " " -f6 > ix-tmp/"$SERIAL"-PWC.txt
-  PWC=$( ix-tmp/"$SERIAL"-PWC.txt)
+  PWC=$( ix-tmp/"$SERIAL"-PWC.txt )
 }
 
 # Creating function for verifying password change
@@ -259,7 +259,7 @@ function PWD-VERIFY(){
 
   if echo "$PWC" | grep -oh "\w*Complete\w*" | grep -F -wqi -e Complete; then
     echo "[PWD VERIFIED]" > ix-tmp/"$SERIAL"-PWD-Verified.txt
-    PWDV=$( ix-tmp/"$SERIAL"-PWD-Verified.txt)
+    PWDV=$( ix-tmp/"$SERIAL"-PWD-Verified.txt )
 
   fi
 }
@@ -272,10 +272,10 @@ echo "==========================================================================
 
 if [ "$MOTHERMAN" == "Supermicro" ] && [[ -n "$IPMIPASSWORD" ]]; then
   echo "ADMIN" > ix-tmp/"$SERIAL"-Username.txt
-  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt)
+  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt )
 
   lynx --dump ix-tmp/"$SERIAL"-PBS-Passmark_Log.htm | grep -i "Motherboard Name:" | xargs | cut -d " " -f3 > ix-tmp/"$SERIAL"-Super.txt
-  SUPER=$( ix-tmp/"$SERIAL"-Super.txt)
+  SUPER=$( ix-tmp/"$SERIAL"-Super.txt )
 
 fi
 
@@ -365,8 +365,8 @@ if [[ "$MODELTYPE" == @(TRUENAS-R20B) ]]; then
 
 fi
 
-NETSET=$( cat ix-tmp/"$SERIAL"-Net-Change.txt)
-FANSET=$( cat ix-tmp/"$SERIAL"-Fan-Set.txt)
+NETSET=$( ix-tmp/"$SERIAL"-Net-Change.txt )
+FANSET=$( ix-tmp/"$SERIAL"-Fan-Set.txt )
 
 
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
@@ -376,7 +376,7 @@ echo "==========================================================================
 
 if [ "$MOTHERMAN" == "ASUSTeK" ] && [[ -n "$IPMIPASSWORD" ]]; then
   echo "admin" > ix-tmp/"$SERIAL"-Username.txt
-  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt)
+  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt )
 
   ipmitool -I lanplus -H "$IPMIIP" -U admin -P administrator user set password 2 "$IPMIPASSWORD"
   sleep 1
@@ -403,7 +403,7 @@ echo "==========================================================================
 
 if [ "$MOTHERMAN" == "ASRockRack" ] && [[ -n "$IPMIPASSWORD" ]]; then
   echo "admin" > ix-tmp/"$SERIAL"-Username.txt
-  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt)
+  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt )
 
   ipmitool -I lanplus -H "$IPMIIP" -U admin -P admin user set password 2 "$IPMIPASSWORD"
   sleep 1
@@ -423,7 +423,7 @@ echo "==========================================================================
 
 if [ "$MOTHERMAN" == "GIGABYTE" ] && [[ -n "$IPMIPASSWORD" ]]; then
   echo "admin" > ix-tmp/"$SERIAL"-Username.txt
-  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt)
+  IPMIUSER=$( ix-tmp/"$SERIAL"-Username.txt )
 
   ipmitool -I lanplus -H "$IPMIIP" -U admin -P password user set password 2 "$IPMIPASSWORD"
   sleep 1
@@ -495,8 +495,8 @@ if grep -q "SFT-DCMS-SINGLE" "ix-tmp/DCMS-Check.txt"; then
   echo "[DCMS LICENSE REQUIRED]" > ix-tmp/DCMS-Alert.txt
 fi
 
-SFTOOB=$( ix-tmp/OOB-Alert.txt)
-SFTDCMS=$( ix-tmp/DCMS-Alert.txt)
+SFTOOB=$( ix-tmp/OOB-Alert.txt )
+SFTDCMS=$( ix-tmp/DCMS-Alert.txt )
 
 # Grabbing parts lists for DIFF between systems
 
@@ -586,7 +586,7 @@ elif ix-tmp/"$SERIAL"-FAN-Data.txt | grep "no reading"; then
   echo "[CHECK FANS]" > ix-tmp/"$SERIAL"-FAN-Check.txt
 fi
 
-FANERROR=$( ix-tmp/"$SERIAL"-FAN-Check.txt)
+FANERROR=$( ix-tmp/"$SERIAL"-FAN-Check.txt )
 
 
 # Dumping data to consolidate output file
@@ -610,7 +610,7 @@ echo "==========================================================================
 
 # Creating GOLD file for diff
 
-LINE=$(head -n 1 IP.txt)
+LINE=$( head -n 1 IP.txt )
 
 cp ix-tmp/"$LINE"-SEL-Data.txt ix-tmp/SWQC/GOLD-SEL-Data.txt
 cp ix-tmp/"$LINE"-SDR-Data.txt ix-tmp/SWQC/GOLD-SDR-Data.txt
@@ -626,7 +626,7 @@ exec 3<&0
 exec 0<$FILE
 while read -r line
 do
-  SERIAL=$(echo "$line" | cut -d " " -f 1)
+  SERIAL=$( echo "$line" | cut -d " " -f 1 )
 
   echo "------------------------------------------------------'$SERIAL'------------------------------------------------------" >> ix-tmp/SWQC/"$ORDER"-SEL-DIFF.txt
   diff -y -W 200 --suppress-common-lines ix-tmp/SWQC/GOLD-SEL-Data.txt ix-tmp/"$SERIAL"-SEL-Data.txt >> ix-tmp/SWQC/"$ORDER"-SEL-DIFF.txt
