@@ -59,21 +59,21 @@ tar cfz "$SERIAL-CM6-Flash.tar.gz" cm6-tmp/
 echo "==========================================================================" >> cm6-tmp/LINE-Output.txt
 
 
-echo "[ECHONAS.IXSYSTEMS.COM:ROOT]" > ~/.nsmbrc
-echo "password=abcd1234" >> ~/.nsmbrc
+echo "[XXXXXXX.XXXXXXXXX.XXX:USER]" > ~/.nsmbrc
+echo "password=xxxxxxxx" >> ~/.nsmbrc
 cat ~/.nsmbrc
-mkdir /mnt/sj-storage
-mount_smbfs -N -I 10.246.0.110 //root@10.246.0.110/sj-storage/ /mnt/sj-storage
+mkdir /mnt/FOLDER
+mount_smbfs -N -I <DOMAIN> //root@<DOMAIN>/PATH/ /mnt/FOLDER
 echo "SJ Storage Mounted"
 
 
-echo "==========================================================================" >> cm6-tmp/LINE-Output.txt
+echo "==========================================================================" >> ix-tmp/LINE-Output.txt
 
 
-echo "Copying tar.gz File To swqc-output On sj-storage"
+echo "Copying tar.gz File To PATH On sj-storage"
 cd /var/tmp
-cp *.tar.gz /mnt/sj-storage/swqc-output
-echo "Finished Copying tar.gz File To swqc-output On sj-storage"
+cp *.tar.gz /mnt/FOLDER/PATH
+echo "Finished Copying tar.gz File To PATH On sj-storage"
 
 
 echo "==========================================================================" >> cm6-tmp/LINE-Output.txt
