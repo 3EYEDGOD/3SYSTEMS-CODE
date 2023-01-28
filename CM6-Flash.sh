@@ -9,7 +9,7 @@
 
 # This is the directory where the data we collect will go
 
-cd /var/tmp
+cd /var/tmp || exit
 mkdir cm6-tmp
 
 
@@ -25,25 +25,27 @@ SERIAL=$(cat cm6-tmp/System-Serial.txt)
 echo "==========================================================================" >> cm6-tmp/LINE-Output.txt
 
 
-echo -e "+----------------+" >> cm6-tmp/$SERIAL-CM6-CHECK.txt
-echo "+[CM6 NVME FLASH]+" >> cm6-tmp/$SERIAL-CM6-CHECK.txt
-echo -e "+----------------+\n\n" >> cm6-tmp/$SERIAL-CM6-CHECK.txt
+{ echo -e "+----------------+";
+echo "+[CM6 NVME FLASH]+";
+echo -e "+----------------+\n\n";
+} >> cm6-tmp/"$SERIAL"-CM6-CHECK.txt
 nvmecontrol devlist | grep -F -e "CM6" >> cm6-tmp/NVMEcontrol-Check.txt
-nvmecontrol devlist | grep -F -e "CM6" | sed 's/^ *//g'  >> cm6-tmp/$SERIAL-CM6-CHECK.txt
-echo -e "\n" >> cm6-tmp/$SERIAL-CM6-CHECK.txt
-cat cm6-tmp/NVMEcontrol-Check.txt | cut -d ":" -f1 | sed 's/^ *//g' | xargs -0 | sed '$d' >> cm6-tmp/NVD-List.txt
+nvmecontrol devlist | grep -F -e "CM6" | sed 's/^ *//g'  >> cm6-tmp/"$SERIAL"-CM6-CHECK.txt
+echo -e "\n" >> cm6-tmp/"$SERIAL"-CM6-CHECK.txt
+cm6-tmp/NVMEcontrol-Check.txt | cut -d ":" -f1 | sed 's/^ *//g' | xargs -0 | sed '$d' >> cm6-tmp/NVD-List.txt
 
 
 FILE=/tmp/cm6-tmp/NVD-List.txt
 NVME=""
 exec 3<&0
 exec 0<$FILE
-while read line
+while read -r line
 do
-NVME=$(echo $line | cut -d " " -f1)
 
-echo "nvmecontrol admin-passthru -o 0xC4 -n=0 -4 0x0100 -5 0x0 -6 0x0 $NVME" >> cm6-tmp/$SERIAL-CM6-CHECK.txt
-nvmecontrol admin-passthru -o 0xC4 -n=0 -4 0x0100 -5 0x0 -6 0x0 "$NVME" >> cm6-tmp/$SERIAL-CM6-CHECK.txt
+NVME=$(echo "$line" | cut -d " " -f1)
+
+echo "nvmecontrol admin-passthru -o 0xC4 -n=0 -4 0x0100 -5 0x0 -6 0x0 $NVME" >> cm6-tmp/"$SERIAL"-CM6-CHECK.txt
+nvmecontrol admin-passthru -o 0xC4 -n=0 -4 0x0100 -5 0x0 -6 0x0 "$NVME" >> cm6-tmp/"$SERIAL"-CM6-CHECK.txt
 
 done
 
@@ -63,7 +65,7 @@ echo "[XXXXXXX.XXXXXXXXX.XXX:USER]" > ~/.nsmbrc
 echo "password=xxxxxxxx" >> ~/.nsmbrc
 cat ~/.nsmbrc
 mkdir /mnt/FOLDER
-mount_smbfs -N -I <DOMAIN> //root@<DOMAIN>/PATH/ /mnt/FOLDER
+mount_smbfs -N -I xxx.xxx.xxx.xxx //root@xxx.xxx.xxx.xxx/PATH/ /mnt/FOLDER
 echo "SJ Storage Mounted"
 
 
@@ -71,13 +73,13 @@ echo "==========================================================================
 
 
 echo "Copying tar.gz File To PATH On sj-storage"
-cd /var/tmp
-cp *.tar.gz /mnt/FOLDER/PATH
+cd /var/tmp || return
+cp ./*glob*.tar.gz /mnt/FOLDER/PATH
 echo "Finished Copying tar.gz File To PATH On sj-storage"
 
 
 echo "==========================================================================" >> cm6-tmp/LINE-Output.txt
 
-rm -rf  *.tar.gz cm6-tmp/
+rm -rf  ./*glob*.tar.gz cm6-tmp/
 
 exit

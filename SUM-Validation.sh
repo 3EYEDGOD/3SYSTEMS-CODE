@@ -37,7 +37,6 @@ mkdir val-tmp
 # Collecting name of person performing CC
 
 dialog --inputbox "Enter The Name Of The Person Performing CC Here" 10 60 2> val-tmp/cc-person.txt
-CCPERSON=$(cat val-tmp/cc-person.txt)
 
 # Collecting order number
 
@@ -46,7 +45,7 @@ ORDER=$(cat val-tmp/ordertemp.txt)
 
 # Removing previous files
 
-rm -rf $ORDER-SUM-VAL.tar.gz $ORDER-SUM-VAL/
+rm -rf "$ORDER"-SUM-VAL.tar.gz "$ORDER"-SUM-VAL/
 
 
 echo "==========================================================================" >> val-tmp/LINE-Output.txt
@@ -60,18 +59,18 @@ touch val-tmp/field3-output.txt
 touch val-tmp/field4-output.txt
 
 FILE=File.txt
-SERIAL=””
-IP=””
-USER=””
-PASSWORD=””
+SERIAL=""
+IP=""
+USER=""
+PASSWORD=""
 exec 3<&0
 exec 0<$FILE
-while read line
+while read -r line
 do
-SERIAL=$(echo $line | cut -d " " -f 1)
-IP=$(echo $line | cut -d " " -f 2)
-USER=$(echo $line | cut -d " " -f 3)
-PASSWORD=$(echo $line | cut -d " " -f 4)
+SERIAL=$(echo "$line" | cut -d " " -f 1)
+IP=$(echo "$line" | cut -d " " -f 2)
+USER=$(echo "$line" | cut -d " " -f 3)
+PASSWORD=$(echo "$line" | cut -d " " -f 4)
 
 echo "$IP" > val-tmp/field1-output.txt
 echo "IP is $IP"
@@ -91,97 +90,97 @@ echo "==========================================================================
 printf "\nRetreiving BIOS Configuration\n"
 echo -e "------------------------------\n\n"
 
-./sum -i $IP -u $USER -p $PASSWORD -c GetCurrentBiosCfg --file "bioscfg-$ORDER-$SERIAL-$IP"
-mv -i bioscfg-$ORDER-$SERIAL-$IP val-tmp/bios-files
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -c GetCurrentBiosCfg --file "bioscfg-$ORDER-$SERIAL-$IP"
+mv -i bioscfg-"$ORDER"-"$SERIAL"-"$IP" val-tmp/bios-files
 
 printf "\nRetreiving Event Logs\n"
 echo -e "----------------------\n\n"
 
-./sum -i $IP -u $USER -p $PASSWORD -c GetEventLog --file "eventlog-$ORDER-$SERIAL-$IP"
-mv -i eventlog-$ORDER-$SERIAL-$IP val-tmp/event-logs
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -c GetEventLog --file "eventlog-$ORDER-$SERIAL-$IP"
+mv -i eventlog-"$ORDER"-"$SERIAL"-"$IP" val-tmp/event-logs
 
 printf "\nFinished Collecting Event Log And BIOS Configs\n"
-echo -e "-----------------------------------------------\n"
+printf "-----------------------------------------------\n"
 
 
 echo "==========================================================================" >> val-tmp/LINE-Output.txt
 
 
-echo -e "\n--------"
-echo $SERIAL
-echo -e "--------\n\n"
+printf "\n--------"
+echo -e "$SERIAL"
+printf "--------\n\n"
 
 # Gathering system information & boot to BIOS
 
-ipmitool -H $IP -U $USER -P $PASSWORD power cycle
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" power cycle
 
 yes | pv -SpeL1 -s 45 > /dev/null
 
 
-./sum -i $IP -u $USER -p $PASSWORD -C GetDmiInfo  > val-tmp/$ORDER-DMI-Info-Data-$SERIAL-$IP.txt
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C GetDmiInfo  > val-tmp/"$ORDER"-DMI-Info-Data-"$SERIAL"-"$IP".txt
 printf "\nCollected DMI Info\n"
 echo -e "--------------------"
-ipmitool -H $IP -U $USER -P $PASSWORD raw 0x30 0x03
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" raw 0x30 0x03
 printf "Reset Chassis Intrusion\n"
 echo -e "------------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sdr list > val-tmp/$ORDER-Sensor-Via-IPMI-Data-$SERIAL-$IP.txt
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" sdr list > val-tmp/"$ORDER"-Sensor-Via-IPMI-Data-"$SERIAL"-"$IP".txt
 printf "Collected SDR List Info\n"
 echo -e "------------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckSensorData > val-tmp/$ORDER-Sensor-Data-$SERIAL-$IP.txt
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C CheckSensorData > val-tmp/"$ORDER"-Sensor-Data-"$SERIAL"-"$IP".txt
 printf "Collected Sensor Data\n"
 echo -e "----------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckAssetInfo > val-tmp/$ORDER-CheckAssetInfo-Data-$SERIAL-$IP.txt
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C CheckAssetInfo > val-tmp/"$ORDER"-CheckAssetInfo-Data-"$SERIAL"-"$IP".txt
 printf "Checked Asset Info\n"
 echo -e "-------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD bmc info > val-tmp/$ORDER-BMC-Via-ipmitool-Data-$SERIAL-$IP.txt
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" bmc info > val-tmp/"$ORDER"-BMC-Via-ipmitool-Data-"$SERIAL"-"$IP".txt
 printf "Gathered BMC Info\n"
 echo -e "------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckAssetInfo | egrep -i 'MAC Address' > val-tmp/$ORDER-MAC-Address-Data-$SERIAL-$IP.txt
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C CheckAssetInfo | grep -E -i 'MAC Address' > val-tmp/"$ORDER"-MAC-Address-Data-"$SERIAL"-"$IP".txt
 printf "Retrieved MAC Address\n"
 echo -e "----------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C QueryProductKey > val-tmp/$ORDER-Query-Product-Key-Data-$SERIAL-$IP.txt
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C QueryProductKey > val-tmp/"$ORDER"-Query-Product-Key-Data-"$SERIAL"-"$IP".txt
 printf "Getting Product Key\n"
 echo -e "--------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sdr type 'Power Supply' > val-tmp/$ORDER-SDR-Type-Power-Supply-Data-$SERIAL-$IP.txt
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" sdr type 'Power Supply' > val-tmp/"$ORDER"-SDR-Type-Power-Supply-Data-"$SERIAL"-"$IP".txt
 printf "Looked At Power Supply\n"
 echo -e "-----------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckOOBSupport  > val-tmp/$ORDER-OOB-Support-Check-Data-$SERIAL-$IP.txt
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C CheckOOBSupport  > val-tmp/"$ORDER"-OOB-Support-Check-Data-"$SERIAL"-"$IP".txt
 printf "Checked OOB Support\n"
 echo -e "--------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sel list > val-tmp/$ORDER-SEL-List-Data-$SERIAL-$IP.txt
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" sel list > val-tmp/"$ORDER"-SEL-List-Data-"$SERIAL"-"$IP".txt
 printf "Retreived SEL List\n"
 echo -e "-------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sensor list | grep -i 'FAN[1458]' > val-tmp/$ORDER-FAN-REMOVAL-Fan-Check-Via-IPMI-Data-$SERIAL-$ip.txt
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" sensor list | grep -i 'FAN[1458]' > val-tmp/"$ORDER"-FAN-REMOVAL-Fan-Check-Via-IPMI-Data-"$SERIAL"-"$IP".txt
 printf "Checked 'FAN[1458]'\n"
 echo -e "--------------------\n"
 
 # OOB/DCMS license check
 
-printf "==========================================================================\n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
-printf "Verifying OOB/DCMS Keys For $SERIAL \n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
-./sum -i $IP -u $USER -p $PASSWORD -C QueryProductKey >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
-printf "\n\n--------------------------------------------------------------------------\n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
-./sum -i $IP -u $USER -p $PASSWORD -C CheckOOBSupport >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
-printf "\n\n==========================================================================\n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
-
+{ printf "==========================================================================\n\n";
+echo -e "Verifying OOB/DCMS Keys For $SERIAL \n\n";
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C QueryProductKey;
+printf "\n\n--------------------------------------------------------------------------\n\n";
+./sum -i "$IP" -u "$USER" -p "$PASSWORD" -C CheckOOBSupport;
+printf "\n\n==========================================================================\n\n";
+} >> val-tmp/"$ORDER"-OOB-DCMS-LICENSE.txt
 printf "\nClearing SEL List\n"
 echo -e "------------------\n\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sel clear
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" sel clear
 printf "\nPower Cycle System\n"
 echo -e "-------------------\n\n"
-ipmitool -H $IP -U $USER -P $PASSWORD chassis power cycle
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" chassis power cycle
 printf "\nBoot To BIOS\n"
 echo -e "-------------\n\n"
-ipmitool -H $IP -U $USER -P $PASSWORD chassis bootparam set bootflag force_bios
+ipmitool -H "$IP" -U "$USER" -P "$PASSWORD" chassis bootparam set bootflag force_bios
 printf "\n\n"
 
 done
 
-mv val-tmp $ORDER-SUM-VAL
+mv val-tmp "$ORDER"-SUM-VAL
 
 # Compress output file
 
-tar cfz "$ORDER-SUM-VAL.tar.gz" $ORDER-SUM-VAL/
+tar cfz "$ORDER-SUM-VAL.tar.gz" "$ORDER"-SUM-VAL/
 
 exit
 

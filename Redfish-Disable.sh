@@ -6,35 +6,32 @@
 # Version       :1.0
 #########################################################################################################
 
-cd /tmp
+cd /tmp || exit
 mkdir /tmp/ix-tmp
 
 
 # Grabbing serial number
 
 dmidecode -t1 | grep -E -o -i "A1-.{0,6}" > ix-tmp/System-Serial.txt
-SERIAL=$(cat ix-tmp/System-Serial.txt)
+SERIAL=$( ix-tmp/System-Serial.txt)
 
 
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
 
 
-echo 'ipmi=IPMIIP
-pw='IPMIPASSWD'
-curl -v -k -u "admin:${pw}" \
-        --request PATCH "https://${ipmi}/redfish/v1/AccountService/Accounts/1" \
+echo '' curl -v -k -u "admin:IPMIPASSWD" \
+        --request PATCH "https://IPMIIP/redfish/v1/AccountService/Accounts/1" \
         --header 'If-None-Match: W/"WHITENOISE"' \
         --header 'Content-Type: application/json' \
-        --data-raw "{\"Enabled\": false  }" ' > ix-tmp/Redfish-Disable.txt
+        --data-raw "{\"Enabled\": false  }"  '' > ix-tmp/Redfish-Disable.txt 
 
 
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
 
 
-ipmi=IPMIIP
-pw='IPMIPASSWD'
-curl -v -k -u "admin:${pw}" \
-        --request PATCH "https://${ipmi}/redfish/v1/AccountService/Accounts/1" \
+
+curl -v -k -u "admin:IPMIPASSWD" \
+        --request PATCH "https://IPMIIP/redfish/v1/AccountService/Accounts/1" \
         --header 'If-None-Match: W/"WHITENOISE"' \
         --header 'Content-Type: application/json' \
         --data-raw "{\"Enabled\": false  }" &>> ix-tmp/Redfish-Disable.txt
@@ -43,17 +40,14 @@ curl -v -k -u "admin:${pw}" \
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
 
 
-echo 'ipmi=IPMIIP
-pw='IPMIPASSWD'
-curl -v -s -k -u "admin:${pw}" --request GET "https://${ipmi}/redfish/v1/AccountService/Accounts/1" | jq .Enabled' > ix-tmp/Redfish-Check.txt
+echo '' curl -v -s -k -u "admin:IPMIPASSWD" --request GET "https://IPMIIP/redfish/v1/AccountService/Accounts/1" | jq .Enabled '' > ix-tmp/Redfish-Check.txt
 
 
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
 
 
-ipmi=IPMIIP
-pw='IPMIPASSWD'
-curl -v -s -k -u "admin:${pw}" --request GET "https://${ipmi}/redfish/v1/AccountService/Accounts/1" | jq .Enabled &>> ix-tmp/Redfish-Check.txt
+
+curl -v -s -k -u "admin:IPMIPASSWD" --request GET "https://IPMIIP/redfish/v1/AccountService/Accounts/1" | jq .Enabled &>> ix-tmp/Redfish-Check.txt
 
 
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
@@ -79,9 +73,9 @@ echo "==========================================================================
 
 echo "Copying tar.gz file to swqc-output on sj-storage"
 
-cd /tmp
+cd /tmp || return
 
-cp *.tar.gz /mnt/sj-storage/swqc-output/
+cp ./*glob*.tar.gz /mnt/sj-storage/swqc-output/
 
 echo "Finished copying tar.gz file to swqc-output on sj-storage"
 
@@ -89,6 +83,6 @@ echo "Finished copying tar.gz file to swqc-output on sj-storage"
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
 
 rm -rf ix-tmp/
-rm -rf  *.tar.gz ix-tmp/
+rm -rf  ./*glob*.tar.gz ix-tmp/
 
 exit
