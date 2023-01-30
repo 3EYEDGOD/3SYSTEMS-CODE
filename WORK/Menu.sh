@@ -1,7 +1,7 @@
 #!/bin/bash
 # Title					:Menu.sh
 # Description		:Menu For Scripts
-# Author				:Juan Garcia
+# Author				:3EYEDGOD
 # Date					:04:11:2022
 # Version				:2.0
 #########################################################################################################

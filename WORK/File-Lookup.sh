@@ -30,6 +30,6 @@ cp -r /mnt/sj-storage/Production/TrueNAS_Configuration/2021/$ORDER/ ~/$ORDER-FIL
 cp -r /mnt/sj-storage/Production/TrueNAS_Configuration/2022/$ORDER/ ~/$ORDER-FILE/$ORDER-2022 2>/dev/null
 cp -r /mnt/sj-storage/Production/TrueNAS_Configuration/2023/$ORDER/ ~/$ORDER-FILE/$ORDER-2023 2>/dev/null
 
-cp -r /mnt/sj-storage/"MFG Quality Photos"/"SWQC Screenshots Servers and Mini"/"Serial #"/$SERIAL.tar.gz ~/$ORDER-FILE/$SERIAL 2>/dev/null
+cp -r /mnt/sj-storage/"MFG Quality Photos"/"SWQC Screenshots Servers and Mini"/"Serial #"/"$SERIAL".tar.gz ~/$ORDER-FILE/"$SERIAL" 2>/dev/null
 
 exit

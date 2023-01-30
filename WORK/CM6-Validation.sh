@@ -1,7 +1,7 @@
 #!/bin/bash
 # Title         :CM6-Check.sh
 # Description   :Designed To Run CM6-Flash.sh
-# Author		:Juan Garcia
+# Author		:3EYEDGOD
 # Date          :11-11-22
 # Version       :1.0
 #########################################################################################################

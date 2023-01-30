@@ -1,15 +1,15 @@
 #!/bin/bash -x
-# Title         :AOC-SLG3-4E2P.sh
-# Description   :Designed To Flash AOC-SLG3-4E2P On TrueNAS-R50BM
-# Author		    :Juan Garcia
-# Date          :11-11-22
-# Version       :1.0
+# Title: AOC-SLG3-4E2P.sh
+# Description: Designed To Flash AOC-SLG3-4E2P On TrueNAS-R50BM
+# Author: 3EYEDGOD
+# Date: 11-11-22
+# Version: 1.0
 #########################################################################################################
 
 
 # This is the directory where the data we collect will go
 
-cd /var/tmp
+cd /var/tmp || exit
 mkdir ix-tmp
 
 
@@ -32,22 +32,22 @@ PCIE=$(cat ix-tmp/PCI-E-Devices.txt)
 
 # Checking eeprom image status
 
-printf "EEPROM STATUS PRE-FLASH:\n\n" >> ix-tmp/$SERIAL-R50BM-FLASH.txt
-./plx_eeprom -b $PCIE > ix-tmp/EEPROM-Status.txt
-./plx_eeprom -b $PCIE >> ix-tmp/$SERIAL-R50BM-FLASH.txt
+printf "EEPROM STATUS PRE-FLASH:\n\n" >> ix-tmp/"$SERIAL"-R50BM-FLASH.txt
+./plx_eeprom -b "$PCIE" > ix-tmp/EEPROM-Status.txt
+./plx_eeprom -b "$PCIE" >> ix-tmp/"$SERIAL"-R50BM-FLASH.txt
 
 # Flashing the Card using EEPROM image
 
-printf "\n\n-----\n" >> ix-tmp/$SERIAL-R50BM-FLASH.txt
-./plx_eeprom -b $PCIE -w -f /var/tmp/sm_patch2.eep > ix-tmp/EEPROM-Flash-Check.txt
-./plx_eeprom -b $PCIE -w -f /var/tmp/sm_patch2.eep >> ix-tmp/$SERIAL-R50BM-FLASH.txt
-printf "-----\n\n" >> ix-tmp/$SERIAL-R50BM-FLASH.txt
+printf "\n\n-----\n" >> ix-tmp/"$SERIAL"-R50BM-FLASH.txt
+./plx_eeprom -b "$PCIE" -w -f /var/tmp/sm_patch2.eep > ix-tmp/EEPROM-Flash-Check.txt
+./plx_eeprom -b "$PCIE" -w -f /var/tmp/sm_patch2.eep >> ix-tmp/"$SERIAL"-R50BM-FLASH.txt
+printf "-----\n\n" >> ix-tmp/"$SERIAL"-R50BM-FLASH.txt
 
 # Checking eeprom image status after flashing
 
-printf "EEPROM STATUS POST-FLASH:\n\n" >> ix-tmp/$SERIAL-R50BM-FLASH.txt
-./plx_eeprom -b $PCIE > ix-tmp/EEPROM-Status-Flashed.txt
-./plx_eeprom -b $PCIE >> ix-tmp/$SERIAL-R50BM-FLASH.txt
+printf "EEPROM STATUS POST-FLASH:\n\n" >> ix-tmp/"$SERIAL"-R50BM-FLASH.txt
+./plx_eeprom -b "$PCIE" > ix-tmp/EEPROM-Status-Flashed.txt
+./plx_eeprom -b "$PCIE" >> ix-tmp/"$SERIAL"-R50BM-FLASH.txt
 
 
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
@@ -73,7 +73,7 @@ echo "==========================================================================
 
 
 echo "Copying tar.gz File To swqc-output On sj-storage"
-cd /var/tmp
+cd /var/tmp || return
 cp *.tar.gz /mnt/sj-storage/swqc-output
 echo "Finished Copying tar.gz File To swqc-output On sj-storage"
 

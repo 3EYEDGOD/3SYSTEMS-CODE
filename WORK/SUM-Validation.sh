@@ -1,7 +1,7 @@
 #!/bin/bash
 # Title         :SUM-Validation.sh
 # Description   :Grabs Current BIOS Configuration & Various Systems Info
-# Author        :Juan Garcia
+# Author        :3EYEDGOD
 # Date          :04:27:2022
 # Version       :0.1
 #########################################################################################################
@@ -79,8 +79,8 @@ echo "$USER" > val-tmp/field2-output.txt
 echo "USER is $USER"
 echo "$PASSWORD" > val-tmp/field3-output.txt
 echo "PASSWORD is $PASSWORD"
-echo "$SERIAL" > val-tmp/field4-output.txt
-echo "SERIAL is $SERIAL"
+echo ""$SERIAL"" > val-tmp/field4-output.txt
+echo "SERIAL is "$SERIAL""
 
 # Grabbing system BIOS configuration & event logs
 
@@ -91,14 +91,14 @@ echo "==========================================================================
 printf "\nRetreiving BIOS Configuration\n"
 echo -e "------------------------------\n\n"
 
-./sum -i $IP -u $USER -p $PASSWORD -c GetCurrentBiosCfg --file "bioscfg-$ORDER-$SERIAL-$IP"
-mv -i bioscfg-$ORDER-$SERIAL-$IP val-tmp/bios-files
+./sum -i $IP -u $USER -p $PASSWORD -c GetCurrentBiosCfg --file "bioscfg-$ORDER-"$SERIAL"-$IP"
+mv -i bioscfg-$ORDER-"$SERIAL"-$IP val-tmp/bios-files
 
 printf "\nRetreiving Event Logs\n"
 echo -e "----------------------\n\n"
 
-./sum -i $IP -u $USER -p $PASSWORD -c GetEventLog --file "eventlog-$ORDER-$SERIAL-$IP"
-mv -i eventlog-$ORDER-$SERIAL-$IP val-tmp/event-logs
+./sum -i $IP -u $USER -p $PASSWORD -c GetEventLog --file "eventlog-$ORDER-"$SERIAL"-$IP"
+mv -i eventlog-$ORDER-"$SERIAL"-$IP val-tmp/event-logs
 
 printf "\nFinished Collecting Event Log And BIOS Configs\n"
 echo -e "-----------------------------------------------\n"
@@ -108,7 +108,7 @@ echo "==========================================================================
 
 
 echo -e "\n--------"
-echo $SERIAL
+echo "$SERIAL"
 echo -e "--------\n\n"
 
 # Gathering system information & boot to BIOS
@@ -118,47 +118,47 @@ ipmitool -H $IP -U $USER -P $PASSWORD power cycle
 yes | pv -SpeL1 -s 45 > /dev/null
 
 
-./sum -i $IP -u $USER -p $PASSWORD -C GetDmiInfo  > val-tmp/$ORDER-DMI-Info-Data-$SERIAL-$IP.txt
+./sum -i $IP -u $USER -p $PASSWORD -C GetDmiInfo  > val-tmp/$ORDER-DMI-Info-Data-"$SERIAL"-$IP.txt
 printf "\nCollected DMI Info\n"
 echo -e "--------------------"
 ipmitool -H $IP -U $USER -P $PASSWORD raw 0x30 0x03
 printf "Reset Chassis Intrusion\n"
 echo -e "------------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sdr list > val-tmp/$ORDER-Sensor-Via-IPMI-Data-$SERIAL-$IP.txt
+ipmitool -H $IP -U $USER -P $PASSWORD sdr list > val-tmp/$ORDER-Sensor-Via-IPMI-Data-"$SERIAL"-$IP.txt
 printf "Collected SDR List Info\n"
 echo -e "------------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckSensorData > val-tmp/$ORDER-Sensor-Data-$SERIAL-$IP.txt
+./sum -i $IP -u $USER -p $PASSWORD -C CheckSensorData > val-tmp/$ORDER-Sensor-Data-"$SERIAL"-$IP.txt
 printf "Collected Sensor Data\n"
 echo -e "----------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckAssetInfo > val-tmp/$ORDER-CheckAssetInfo-Data-$SERIAL-$IP.txt
+./sum -i $IP -u $USER -p $PASSWORD -C CheckAssetInfo > val-tmp/$ORDER-CheckAssetInfo-Data-"$SERIAL"-$IP.txt
 printf "Checked Asset Info\n"
 echo -e "-------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD bmc info > val-tmp/$ORDER-BMC-Via-ipmitool-Data-$SERIAL-$IP.txt
+ipmitool -H $IP -U $USER -P $PASSWORD bmc info > val-tmp/$ORDER-BMC-Via-ipmitool-Data-"$SERIAL"-$IP.txt
 printf "Gathered BMC Info\n"
 echo -e "------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckAssetInfo | egrep -i 'MAC Address' > val-tmp/$ORDER-MAC-Address-Data-$SERIAL-$IP.txt
+./sum -i $IP -u $USER -p $PASSWORD -C CheckAssetInfo | grep -E -i 'MAC Address' > val-tmp/$ORDER-MAC-Address-Data-"$SERIAL"-$IP.txt
 printf "Retrieved MAC Address\n"
 echo -e "----------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C QueryProductKey > val-tmp/$ORDER-Query-Product-Key-Data-$SERIAL-$IP.txt
+./sum -i $IP -u $USER -p $PASSWORD -C QueryProductKey > val-tmp/$ORDER-Query-Product-Key-Data-"$SERIAL"-$IP.txt
 printf "Getting Product Key\n"
 echo -e "--------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sdr type 'Power Supply' > val-tmp/$ORDER-SDR-Type-Power-Supply-Data-$SERIAL-$IP.txt
+ipmitool -H $IP -U $USER -P $PASSWORD sdr type 'Power Supply' > val-tmp/$ORDER-SDR-Type-Power-Supply-Data-"$SERIAL"-$IP.txt
 printf "Looked At Power Supply\n"
 echo -e "-----------------------\n"
-./sum -i $IP -u $USER -p $PASSWORD -C CheckOOBSupport  > val-tmp/$ORDER-OOB-Support-Check-Data-$SERIAL-$IP.txt
+./sum -i $IP -u $USER -p $PASSWORD -C CheckOOBSupport  > val-tmp/$ORDER-OOB-Support-Check-Data-"$SERIAL"-$IP.txt
 printf "Checked OOB Support\n"
 echo -e "--------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sel list > val-tmp/$ORDER-SEL-List-Data-$SERIAL-$IP.txt
+ipmitool -H $IP -U $USER -P $PASSWORD sel list > val-tmp/$ORDER-SEL-List-Data-"$SERIAL"-$IP.txt
 printf "Retreived SEL List\n"
 echo -e "-------------------\n"
-ipmitool -H $IP -U $USER -P $PASSWORD sensor list | grep -i 'FAN[1458]' > val-tmp/$ORDER-FAN-REMOVAL-Fan-Check-Via-IPMI-Data-$SERIAL-$ip.txt
+ipmitool -H $IP -U $USER -P $PASSWORD sensor list | grep -i 'FAN[1458]' > val-tmp/$ORDER-FAN-REMOVAL-Fan-Check-Via-IPMI-Data-"$SERIAL"-$ip.txt
 printf "Checked 'FAN[1458]'\n"
 echo -e "--------------------\n"
 
 # OOB/DCMS license check
 
 printf "==========================================================================\n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
-printf "Verifying OOB/DCMS Keys For $SERIAL \n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
+printf "Verifying OOB/DCMS Keys For "$SERIAL" \n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
 ./sum -i $IP -u $USER -p $PASSWORD -C QueryProductKey >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
 printf "\n\n--------------------------------------------------------------------------\n\n" >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt
 ./sum -i $IP -u $USER -p $PASSWORD -C CheckOOBSupport >> val-tmp/$ORDER-OOB-DCMS-LICENSE.txt

@@ -1,7 +1,7 @@
 #! /bin/bash
 # Title         :Redfish-Disable.sh
 # Description   :Designed To Disable Redfish user
-# Author	:Juan Garcia
+# Author	:3EYEDGOD
 # Date          :1-19-23
 # Version       :1.0
 #########################################################################################################
@@ -61,7 +61,7 @@ echo "==========================================================================
 
 # Compress output file
 
-tar -czvf "$SERIAL-Redfish-Disable.tar.gz" ix-tmp/
+tar -czvf ""$SERIAL"-Redfish-Disable.tar.gz" ix-tmp/
 
 echo "==========================================================================" >> ix-tmp/LINE-Output.txt
 

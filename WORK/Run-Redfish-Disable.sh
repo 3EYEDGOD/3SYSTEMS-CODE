@@ -1,7 +1,7 @@
 #! /bin/bash
 # Title         :Run-Redfish-Disable
 # Description   :Designed To Disable Redfish User
-# Author		:Juan Garcia
+# Author		:3EYEDGOD
 # Date          :1-19-23
 # Version       :1.0
 #########################################################################################################

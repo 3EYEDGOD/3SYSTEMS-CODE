@@ -1,7 +1,7 @@
 #!/bin/bash
 # Title         :R50BM-SCP.sh
 # Description   :Designed To Run AOC-SLG3-4E2P.sh
-# Author		    :Juan Garcia
+# Author		    :3EYEDGOD
 # Date          :11-11-22
 # Version       :1.0
 #########################################################################################################
