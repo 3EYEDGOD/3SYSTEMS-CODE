@@ -251,9 +251,6 @@ function PWD-CHECK(){
   IPMIUSER=$(cat ix-tmp/"$SERIAL"-Username.txt)
   ipmitool -I lanplus -H $IPMIIP -U $IPMIUSER -P $IPMIPASSWORD lan print 1 > ix-tmp/"$SERIAL"-Passwd-Check.txt
 
-  cat ix-tmp/"$SERIAL"-Passwd-Check.txt | grep -i Complete
-  PWSTATUS=$(cat ix-tmp/"$SERIAL"-Passwd-Check.txt)
-
   tr -s ' ' < ix-tmp/"$SERIAL"-Passwd-Check.txt | grep -i Complete | cut -d " " -f6 > ix-tmp/"$SERIAL"-PWC.txt
   PWC=$(cat ix-tmp/"$SERIAL"-PWC.txt)
 }
